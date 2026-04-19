@@ -86,7 +86,7 @@ const HYBRID_LEVELS = [
 function formatBreedLabel(breed: string) {
   return breed
     .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 }
 
@@ -117,12 +117,9 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
 
   const filteredBreeds = useMemo(() => {
-    const query = breedQuery.trim().toLowerCase();
-    if (!query) return DOG_BREEDS;
-
-    return DOG_BREEDS.filter((dogBreed) =>
-      dogBreed.toLowerCase().includes(query)
-    );
+    const q = breedQuery.trim().toLowerCase();
+    if (!q) return DOG_BREEDS;
+    return DOG_BREEDS.filter((b) => b.toLowerCase().includes(q));
   }, [breedQuery]);
 
   const handleUpload = async () => {
@@ -206,85 +203,58 @@ export default function Home() {
     <main
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(180deg, #f7fbfa 0%, #ffffff 100%)",
-        padding: "32px 20px 56px",
+        background: "#f5f5f5",
+        padding: 24,
         fontFamily: "Arial, sans-serif",
-        color: "#102321",
+        color: "#000",
       }}
     >
-      <div
-        style={{
-          maxWidth: 1180,
-          margin: "0 auto",
-        }}
-      >
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: 28,
-          }}
-        >
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 30 }}>
           <Image
             src="/logo.png"
             alt="Mad Beach Pet Waste Co"
-            width={340}
-            height={108}
+            width={300}
+            height={100}
             priority
-            style={{
-              width: "100%",
-              maxWidth: 340,
-              height: "auto",
-              marginBottom: 14,
-            }}
+            style={{ height: "auto", width: "100%", maxWidth: 300 }}
           />
 
           <h1
             style={{
-              margin: 0,
               fontSize: 42,
-              lineHeight: 1.1,
+              margin: 10,
+              letterSpacing: 1,
+              textTransform: "uppercase",
+              fontWeight: 900,
             }}
           >
             Dogify Me
           </h1>
-
-          <p
-            style={{
-              margin: "10px auto 0",
-              maxWidth: 700,
-              fontSize: 18,
-              lineHeight: 1.5,
-              color: "#36514d",
-            }}
-          >
-            Upload a photo, pick a breed, choose the transformation strength,
-            and turn yourself into your ideal dog-inspired portrait.
-          </p>
         </div>
 
         <section
           style={{
-            background: "#ffffff",
-            border: "1px solid #d8e7e3",
-            borderRadius: 24,
-            boxShadow: "0 14px 40px rgba(19, 55, 48, 0.08)",
-            padding: 24,
+            border: "4px solid #000",
+            borderRadius: 20,
+            padding: 20,
+            background: "#fff",
           }}
         >
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1.05fr 1.35fr",
-              gap: 24,
+              gridTemplateColumns: "1fr 1.3fr",
+              gap: 20,
               alignItems: "start",
             }}
           >
             <div
               style={{
-                background: "#f8fbfb",
-                border: "1px solid #e4efec",
-                borderRadius: 20,
-                padding: 20,
+                border: "4px solid #000",
+                borderRadius: 16,
+                padding: 16,
+                background: "#fff",
               }}
             >
               <h2
@@ -292,211 +262,117 @@ export default function Home() {
                   marginTop: 0,
                   marginBottom: 16,
                   fontSize: 24,
+                  fontWeight: 900,
                 }}
               >
-                Create your portrait
+                Build Your Pup
               </h2>
 
-              <div style={{ marginBottom: 22 }}>
-                <div
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    marginBottom: 10,
-                    color: "#214741",
-                  }}
-                >
-                  1. Upload your image
-                </div>
-
-                <label
-                  htmlFor="upload"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 10,
-                    background: "#ffffff",
-                    border: "1px solid #cfe2dd",
-                    borderRadius: 14,
-                    padding: "12px 16px",
-                    cursor: "pointer",
-                    fontWeight: 700,
-                    color: "#133730",
-                  }}
-                >
-                  <span>📸 Choose Image</span>
-                  <span
-                    style={{
-                      fontWeight: 400,
-                      color: "#56706b",
-                      maxWidth: 180,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {file ? file.name : "No file selected"}
-                  </span>
-                </label>
-
-                <input
-                  id="upload"
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp"
-                  style={{ display: "none" }}
-                  onChange={(e) => {
-                    const selected = e.target.files?.[0] || null;
-                    setFile(selected);
-                    setResult("");
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) {
+                    setFile(f);
+                    setPreview(URL.createObjectURL(f));
                     setError("");
+                    setResult("");
                     setCopied(false);
+                  }
+                }}
+              />
 
-                    if (selected) {
-                      setPreview(URL.createObjectURL(selected));
-                    } else {
-                      setPreview("");
-                    }
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: 22 }}>
-                <div
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    marginBottom: 10,
-                    color: "#214741",
-                  }}
-                >
-                  2. Pick a dog breed
-                </div>
-
-                <input
-                  type="text"
-                  placeholder="Search breeds..."
-                  value={breedQuery}
-                  onChange={(e) => setBreedQuery(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: 12,
-                    border: "1px solid #cfe2dd",
-                    marginBottom: 12,
-                    fontSize: 14,
-                    outline: "none",
-                  }}
-                />
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 10,
-                    maxHeight: 220,
-                    overflowY: "auto",
-                    paddingRight: 4,
-                  }}
-                >
-                  {filteredBreeds.map((dogBreed) => {
-                    const active = breed === dogBreed;
-
-                    return (
-                      <button
-                        key={dogBreed}
-                        type="button"
-                        onClick={() => setBreed(dogBreed)}
-                        style={{
-                          padding: "10px 14px",
-                          borderRadius: 999,
-                          border: active ? "2px solid #0f6b5d" : "1px solid #cfe2dd",
-                          background: active ? "#dff5ef" : "#ffffff",
-                          color: "#123a34",
-                          fontWeight: active ? 700 : 500,
-                          cursor: "pointer",
-                        }}
-                      >
-                        {formatBreedLabel(dogBreed)}
-                      </button>
-                    );
-                  })}
-
-                  {filteredBreeds.length === 0 && (
-                    <div style={{ color: "#6d8681", fontSize: 14 }}>
-                      No breeds matched that search.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ marginBottom: 24 }}>
-                <div
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    marginBottom: 10,
-                    color: "#214741",
-                  }}
-                >
-                  3. Choose transformation strength
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 10,
-                  }}
-                >
-                  {HYBRID_LEVELS.map((level) => {
-                    const active = hybridLevel === level.value;
-
-                    return (
-                      <button
-                        key={level.value}
-                        type="button"
-                        onClick={() => setHybridLevel(level.value)}
-                        style={{
-                          padding: "10px 14px",
-                          borderRadius: 999,
-                          border: active ? "2px solid #102321" : "1px solid #cfe2dd",
-                          background: active ? "#102321" : "#ffffff",
-                          color: active ? "#ffffff" : "#123a34",
-                          fontWeight: 700,
-                          cursor: "pointer",
-                        }}
-                      >
-                        {level.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              <input
+                placeholder="Search breed..."
+                value={breedQuery}
+                onChange={(e) => setBreedQuery(e.target.value)}
+                style={{
+                  width: "100%",
+                  marginTop: 10,
+                  padding: 8,
+                  border: "2px solid #000",
+                  borderRadius: 8,
+                  outline: "none",
+                }}
+              />
 
               <div
                 style={{
                   display: "flex",
                   flexWrap: "wrap",
-                  gap: 12,
+                  gap: 10,
+                  maxHeight: 220,
+                  overflowY: "auto",
+                  paddingRight: 6,
+                  marginTop: 10,
+                  border: "2px solid #000",
+                  borderRadius: 10,
+                  padding: 10,
                 }}
               >
+                {filteredBreeds.length > 0 ? (
+                  filteredBreeds.map((b) => (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => setBreed(b)}
+                      style={{
+                        border: "3px solid #000",
+                        background: breed === b ? "#000" : "#fff",
+                        color: breed === b ? "#fff" : "#000",
+                        borderRadius: 999,
+                        padding: "6px 10px",
+                        cursor: "pointer",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {formatBreedLabel(b)}
+                    </button>
+                  ))
+                ) : (
+                  <p style={{ fontSize: 12, margin: 0 }}>No breeds found</p>
+                )}
+              </div>
+
+              <div style={{ marginTop: 16 }}>
+                {HYBRID_LEVELS.map((l) => (
+                  <button
+                    key={l.value}
+                    type="button"
+                    onClick={() => setHybridLevel(l.value)}
+                    style={{
+                      margin: 4,
+                      border: "3px solid #000",
+                      background: hybridLevel === l.value ? "#000" : "#fff",
+                      color: hybridLevel === l.value ? "#fff" : "#000",
+                      borderRadius: 999,
+                      padding: "6px 12px",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 16 }}>
                 <button
                   type="button"
                   onClick={handleUpload}
                   disabled={!file || loading}
                   style={{
-                    padding: "14px 22px",
-                    borderRadius: 14,
-                    border: "none",
-                    background: !file || loading ? "#b5c8c3" : "#0f6b5d",
-                    color: "#ffffff",
-                    fontWeight: 800,
-                    fontSize: 16,
+                    background: "#000",
+                    color: "#fff",
+                    padding: "12px 20px",
+                    borderRadius: 10,
+                    border: "3px solid #000",
                     cursor: !file || loading ? "not-allowed" : "pointer",
-                    minWidth: 190,
+                    fontWeight: 800,
                   }}
                 >
-                  {loading ? "Generating..." : "🐶 Dogify Me"}
+                  {loading ? "🐾 Generating..." : "🐶 Dogify Me"}
                 </button>
 
                 {result && (
@@ -505,13 +381,13 @@ export default function Home() {
                       type="button"
                       onClick={handleDownload}
                       style={{
-                        padding: "14px 18px",
-                        borderRadius: 14,
-                        border: "1px solid #cfe2dd",
-                        background: "#ffffff",
-                        color: "#123a34",
-                        fontWeight: 700,
+                        background: "#fff",
+                        color: "#000",
+                        padding: "12px 20px",
+                        borderRadius: 10,
+                        border: "3px solid #000",
                         cursor: "pointer",
+                        fontWeight: 800,
                       }}
                     >
                       Download
@@ -521,13 +397,13 @@ export default function Home() {
                       type="button"
                       onClick={handleShare}
                       style={{
-                        padding: "14px 18px",
-                        borderRadius: 14,
-                        border: "1px solid #cfe2dd",
-                        background: "#ffffff",
-                        color: "#123a34",
-                        fontWeight: 700,
+                        background: "#fff",
+                        color: "#000",
+                        padding: "12px 20px",
+                        borderRadius: 10,
+                        border: "3px solid #000",
                         cursor: "pointer",
+                        fontWeight: 800,
                       }}
                     >
                       Share
@@ -536,14 +412,20 @@ export default function Home() {
                 )}
               </div>
 
+              {loading && (
+                <p style={{ marginTop: 10, fontWeight: 700 }}>
+                  Creating your pup... 🐾
+                </p>
+              )}
+
               {copied && (
-                <p style={{ color: "#0f6b5d", marginTop: 14, marginBottom: 0 }}>
-                  Share not supported on this device. Link copied instead.
+                <p style={{ marginTop: 10, fontWeight: 700 }}>
+                  Link copied.
                 </p>
               )}
 
               {error && (
-                <p style={{ color: "crimson", marginTop: 14, marginBottom: 0 }}>
+                <p style={{ color: "red", marginTop: 10, fontWeight: 700 }}>
                   {error}
                 </p>
               )}
@@ -553,21 +435,18 @@ export default function Home() {
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
-                gap: 20,
+                gap: 16,
               }}
             >
               <div
                 style={{
-                  background: "#f8fbfb",
-                  border: "1px solid #e4efec",
-                  borderRadius: 20,
-                  padding: 18,
+                  border: "4px solid #000",
+                  borderRadius: 16,
+                  padding: 10,
+                  background: "#fff",
                 }}
               >
-                <h3 style={{ marginTop: 0, marginBottom: 12, fontSize: 22 }}>
-                  Original
-                </h3>
-
+                <h3 style={{ marginTop: 0 }}>Original</h3>
                 {preview ? (
                   <img
                     src={preview}
@@ -576,9 +455,8 @@ export default function Home() {
                       width: "100%",
                       aspectRatio: "1 / 1",
                       objectFit: "cover",
-                      borderRadius: 16,
-                      display: "block",
-                      background: "#edf4f2",
+                      borderRadius: 10,
+                      border: "2px solid #000",
                     }}
                   />
                 ) : (
@@ -586,15 +464,13 @@ export default function Home() {
                     style={{
                       width: "100%",
                       aspectRatio: "1 / 1",
-                      borderRadius: 16,
-                      background: "#edf4f2",
+                      borderRadius: 10,
+                      border: "2px solid #000",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      textAlign: "center",
                       padding: 20,
-                      color: "#5f7671",
-                      lineHeight: 1.5,
+                      textAlign: "center",
                     }}
                   >
                     Your uploaded image will appear here.
@@ -604,16 +480,13 @@ export default function Home() {
 
               <div
                 style={{
-                  background: "#f8fbfb",
-                  border: "1px solid #e4efec",
-                  borderRadius: 20,
-                  padding: 18,
+                  border: "4px solid #000",
+                  borderRadius: 16,
+                  padding: 10,
+                  background: "#fff",
                 }}
               >
-                <h3 style={{ marginTop: 0, marginBottom: 12, fontSize: 22 }}>
-                  Dogified
-                </h3>
-
+                <h3 style={{ marginTop: 0 }}>Dogified</h3>
                 {result ? (
                   <img
                     src={result}
@@ -622,9 +495,8 @@ export default function Home() {
                       width: "100%",
                       aspectRatio: "1 / 1",
                       objectFit: "cover",
-                      borderRadius: 16,
-                      display: "block",
-                      background: "#edf4f2",
+                      borderRadius: 10,
+                      border: "2px solid #000",
                     }}
                   />
                 ) : (
@@ -632,15 +504,13 @@ export default function Home() {
                     style={{
                       width: "100%",
                       aspectRatio: "1 / 1",
-                      borderRadius: 16,
-                      background: "#edf4f2",
+                      borderRadius: 10,
+                      border: "2px solid #000",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      textAlign: "center",
                       padding: 20,
-                      color: "#5f7671",
-                      lineHeight: 1.5,
+                      textAlign: "center",
                     }}
                   >
                     Your generated portrait will appear here.
