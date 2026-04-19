@@ -495,7 +495,7 @@ export default function Home() {
         }
 
         .previewPanel {
-          padding: 6px;
+          padding: 10px;
         }
 
         .previewTitle {
@@ -507,7 +507,7 @@ export default function Home() {
         .previewImg,
         .placeholder {
           width: 100%;
-          max-height: 320px;
+          aspect-ratio: 1 / 1;
           border-radius: 10px;
           border: 2px solid #000;
         }
