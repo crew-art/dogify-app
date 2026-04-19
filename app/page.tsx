@@ -202,9 +202,9 @@ export default function Home() {
   return (
     <main
       style={{
-        minHeight: "100vh",
-        background: "#f5f5f5",
-        padding: 24,
+        minHeight: "auto",
+        background: "transparent",
+        padding: 12,
         fontFamily: "Arial, sans-serif",
         color: "#000",
       }}
